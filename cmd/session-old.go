@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/pkg/v2/quick"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/quick"
 )
 
 // ///////////////// Session V6 ///////////////////

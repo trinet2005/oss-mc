@@ -23,9 +23,9 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gdamore/tcell/v2"
-	"github.com/minio/madmin-go/v3"
 	"github.com/navidys/tvxwidgets"
 	"github.com/rivo/tview"
+	"github.com/trinet2005/oss-admin-go"
 )
 
 func quitOnKeys(app *tview.Application) func(event *tcell.EventKey) *tcell.EventKey {

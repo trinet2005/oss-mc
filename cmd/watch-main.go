@@ -27,9 +27,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7/pkg/notification"
-	"github.com/minio/pkg/v2/console"
+	"github.com/trinet2005/oss-go-sdk/pkg/notification"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 var watchFlags = []cli.Flag{

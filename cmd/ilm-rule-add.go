@@ -22,11 +22,11 @@ import (
 
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/cmd/ilm"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/lifecycle"
-	"github.com/minio/pkg/v2/console"
+	minio "github.com/trinet2005/oss-go-sdk"
+	"github.com/trinet2005/oss-go-sdk/pkg/lifecycle"
+	"github.com/trinet2005/oss-mc/cmd/ilm"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 var ilmAddCmd = cli.Command{

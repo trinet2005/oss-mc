@@ -22,7 +22,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/minio/mc/pkg/probe"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 
 	"github.com/minio/cli"
 )

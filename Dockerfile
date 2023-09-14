@@ -8,7 +8,7 @@ ENV GO111MODULE on
 
 RUN  \
      apk add --no-cache git && \
-     git clone https://github.com/minio/mc && cd mc && \
+     git clone https://github.com/trinet2005/oss-mc && cd mc && \
      go install -v -ldflags "$(go run buildscripts/gen-ldflags.go)"
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8

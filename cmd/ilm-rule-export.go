@@ -24,8 +24,8 @@ import (
 
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7/pkg/lifecycle"
+	"github.com/trinet2005/oss-go-sdk/pkg/lifecycle"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 var ilmExportCmd = cli.Command{

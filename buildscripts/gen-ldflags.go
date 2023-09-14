@@ -33,11 +33,11 @@ func genLDFlags(version string) string {
 	copyrightYear := fmt.Sprintf("%d", date.Year())
 
 	var ldflagsStr string
-	ldflagsStr = "-s -w -X github.com/minio/mc/cmd.Version=" + version + " "
-	ldflagsStr = ldflagsStr + "-X github.com/minio/mc/cmd.CopyrightYear=" + copyrightYear + " "
-	ldflagsStr = ldflagsStr + "-X github.com/minio/mc/cmd.ReleaseTag=" + releaseTag + " "
-	ldflagsStr = ldflagsStr + "-X github.com/minio/mc/cmd.CommitID=" + commitID() + " "
-	ldflagsStr = ldflagsStr + "-X github.com/minio/mc/cmd.ShortCommitID=" + commitID()[:12]
+	ldflagsStr = "-s -w -X github.com/trinet2005/oss-mc/cmd.Version=" + version + " "
+	ldflagsStr = ldflagsStr + "-X github.com/trinet2005/oss-mc/cmd.CopyrightYear=" + copyrightYear + " "
+	ldflagsStr = ldflagsStr + "-X github.com/trinet2005/oss-mc/cmd.ReleaseTag=" + releaseTag + " "
+	ldflagsStr = ldflagsStr + "-X github.com/trinet2005/oss-mc/cmd.CommitID=" + commitID() + " "
+	ldflagsStr = ldflagsStr + "-X github.com/trinet2005/oss-mc/cmd.ShortCommitID=" + commitID()[:12]
 	return ldflagsStr
 }
 

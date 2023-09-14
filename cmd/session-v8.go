@@ -29,9 +29,9 @@ import (
 	"time"
 
 	json "github.com/minio/colorjson"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/pkg/v2/console"
-	"github.com/minio/pkg/v2/quick"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
+	"github.com/trinet2005/oss-pkg/quick"
 )
 
 // sessionV8Header for resumable sessions.

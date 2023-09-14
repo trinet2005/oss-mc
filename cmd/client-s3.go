@@ -38,22 +38,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio-go/v7/pkg/encrypt"
-	"github.com/minio/minio-go/v7/pkg/lifecycle"
-	"github.com/minio/minio-go/v7/pkg/notification"
-	"github.com/minio/minio-go/v7/pkg/policy"
-	"github.com/minio/minio-go/v7/pkg/replication"
-	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"github.com/minio/minio-go/v7/pkg/sse"
-	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/pkg/v2/mimedb"
+	minio "github.com/trinet2005/oss-go-sdk"
+	"github.com/trinet2005/oss-go-sdk/pkg/credentials"
+	"github.com/trinet2005/oss-go-sdk/pkg/encrypt"
+	"github.com/trinet2005/oss-go-sdk/pkg/lifecycle"
+	"github.com/trinet2005/oss-go-sdk/pkg/notification"
+	"github.com/trinet2005/oss-go-sdk/pkg/policy"
+	"github.com/trinet2005/oss-go-sdk/pkg/replication"
+	"github.com/trinet2005/oss-go-sdk/pkg/s3utils"
+	"github.com/trinet2005/oss-go-sdk/pkg/sse"
+	"github.com/trinet2005/oss-go-sdk/pkg/tags"
+	"github.com/trinet2005/oss-pkg/mimedb"
 
-	"github.com/minio/mc/pkg/deadlineconn"
-	"github.com/minio/mc/pkg/httptracer"
-	"github.com/minio/mc/pkg/limiter"
-	"github.com/minio/mc/pkg/probe"
+	"github.com/trinet2005/oss-mc/pkg/deadlineconn"
+	"github.com/trinet2005/oss-mc/pkg/httptracer"
+	"github.com/trinet2005/oss-mc/pkg/limiter"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 // S3Client construct
@@ -1523,7 +1523,7 @@ func (c *S3Client) listObjectWrapper(ctx context.Context, bucket, object string,
 
 	if isGoogle(c.targetURL.Host) {
 		// Google Cloud S3 layer doesn't implement ListObjectsV2 implementation
-		// https://github.com/minio/mc/issues/3073
+		// https://github.com/trinet2005/oss-mc/issues/3073
 		return c.api.ListObjects(ctx, bucket, minio.ListObjectsOptions{Prefix: object, Recursive: isRecursive, UseV1: true, MaxKeys: maxKeys})
 	}
 	opts := minio.ListObjectsOptions{Prefix: object, Recursive: isRecursive, WithMetadata: metadata, MaxKeys: maxKeys}
@@ -1762,7 +1762,7 @@ func (c *S3Client) listVersions(ctx context.Context, b, o string, opts ListOptio
 func (c *S3Client) listVersionsRoutine(ctx context.Context, b, o string, opts ListOptions, objectInfoCh chan minio.ObjectInfo) {
 	var buckets []string
 	if b == "" {
-		bucketsInfo, err := c.api.ListBuckets(ctx)
+		bucketsInfo, err := c.api.ListBuckets(ctx, false)
 		if err != nil {
 			select {
 			case <-ctx.Done():
@@ -1822,7 +1822,7 @@ func (c *S3Client) listVersionsRoutine(ctx context.Context, b, o string, opts Li
 
 // ListBuckets - list buckets
 func (c *S3Client) ListBuckets(ctx context.Context) ([]*ClientContent, *probe.Error) {
-	buckets, err := c.api.ListBuckets(ctx)
+	buckets, err := c.api.ListBuckets(ctx, false)
 	if err != nil {
 		return nil, probe.NewError(err)
 	}
@@ -1857,7 +1857,7 @@ func (c *S3Client) versionedList(ctx context.Context, contentCh chan *ClientCont
 	b, o := c.url2BucketAndObject()
 	switch {
 	case b == "" && o == "":
-		buckets, err := c.api.ListBuckets(ctx)
+		buckets, err := c.api.ListBuckets(ctx, false)
 		if err != nil {
 			select {
 			case <-ctx.Done():
@@ -1958,7 +1958,7 @@ func (c *S3Client) listIncompleteInRoutine(ctx context.Context, contentCh chan *
 	b, o := c.url2BucketAndObject()
 	switch {
 	case b == "" && o == "":
-		buckets, err := c.api.ListBuckets(ctx)
+		buckets, err := c.api.ListBuckets(ctx, false)
 		if err != nil {
 			select {
 			case <-ctx.Done():
@@ -2046,7 +2046,7 @@ func (c *S3Client) listIncompleteRecursiveInRoutine(ctx context.Context, content
 	b, o := c.url2BucketAndObject()
 	switch {
 	case b == "" && o == "":
-		buckets, err := c.api.ListBuckets(ctx)
+		buckets, err := c.api.ListBuckets(ctx, false)
 		if err != nil {
 			select {
 			case <-ctx.Done():
@@ -2258,7 +2258,7 @@ func (c *S3Client) listInRoutine(ctx context.Context, contentCh chan *ClientCont
 	}
 	switch {
 	case b == "" && o == "":
-		buckets, e := c.api.ListBuckets(ctx)
+		buckets, e := c.api.ListBuckets(ctx, false)
 		if e != nil {
 			contentCh <- &ClientContent{
 				Err: probe.NewError(e),
@@ -2316,7 +2316,7 @@ func (c *S3Client) listRecursiveInRoutine(ctx context.Context, contentCh chan *C
 	b, o := c.url2BucketAndObject()
 	switch {
 	case b == "" && o == "":
-		buckets, err := c.api.ListBuckets(ctx)
+		buckets, err := c.api.ListBuckets(ctx, false)
 		if err != nil {
 			contentCh <- &ClientContent{
 				Err: probe.NewError(err),

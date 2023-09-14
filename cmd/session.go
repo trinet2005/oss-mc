@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/minio/mc/pkg/probe"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 // migrateSession migrates all previous migration to latest.

@@ -26,8 +26,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/minio/cli"
-	"github.com/minio/madmin-go/v3"
-	"github.com/minio/pkg/v2/console"
+	"github.com/trinet2005/oss-admin-go"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 const (

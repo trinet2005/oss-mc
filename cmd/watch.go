@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7/pkg/notification"
+	"github.com/trinet2005/oss-go-sdk/pkg/notification"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 // EventInfo contains the information of the event that occurred and the source

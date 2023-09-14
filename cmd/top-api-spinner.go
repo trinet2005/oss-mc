@@ -28,8 +28,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dustin/go-humanize"
-	"github.com/minio/madmin-go/v3"
 	"github.com/olekukonko/tablewriter"
+	"github.com/trinet2005/oss-admin-go"
 )
 
 // TODO: Add ART (Average Response Time) latency

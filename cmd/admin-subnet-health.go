@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/minio/cli"
-	"github.com/minio/minio-go/v7/pkg/set"
+	"github.com/trinet2005/oss-go-sdk/pkg/set"
 )
 
 var adminSubnetHealthCmd = cli.Command{

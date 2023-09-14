@@ -30,7 +30,7 @@ docker: build
 
 vet:
 	@echo "Running $@"
-	@GO111MODULE=on go vet github.com/minio/mc/...
+	@GO111MODULE=on go vet github.com/trinet2005/oss-mc/...
 
 lint:
 	@echo "Running $@ check"

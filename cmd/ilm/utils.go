@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio-go/v7/pkg/lifecycle"
+	"github.com/trinet2005/oss-go-sdk/pkg/lifecycle"
 )
 
 // getPrefix returns the prefix configured

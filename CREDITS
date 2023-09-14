@@ -3931,8 +3931,8 @@ SOFTWARE.
 
 ================================================================
 
-github.com/minio/madmin-go/v3
-https://github.com/minio/madmin-go/v3
+github.com/trinet2005/oss-admin-go
+https://github.com/trinet2005/oss-admin-go
 ----------------------------------------------------------------
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
@@ -4806,8 +4806,8 @@ https://github.com/minio/md5-simd
 
 ================================================================
 
-github.com/minio/minio-go/v7
-https://github.com/minio/minio-go/v7
+github.com/trinet2005/oss-go-sdk
+https://github.com/trinet2005/oss-go-sdk
 ----------------------------------------------------------------
 
                                  Apache License
@@ -5047,8 +5047,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================
 
-github.com/minio/pkg/v2
-https://github.com/minio/pkg/v2
+github.com/trinet2005/oss-pkg
+https://github.com/trinet2005/oss-pkg
 ----------------------------------------------------------------
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
