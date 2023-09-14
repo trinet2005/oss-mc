@@ -1,4 +1,4 @@
-module github.com/minio/mc
+module github.com/trinet2005/oss-mc
 
 go 1.19
 
