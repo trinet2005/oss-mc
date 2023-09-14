@@ -26,8 +26,8 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/pkg/v2/console"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 var adminRebalanceStatusCmd = cli.Command{

@@ -24,9 +24,9 @@ import (
 	"strings"
 
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"github.com/rs/xid"
+	"github.com/trinet2005/oss-go-sdk/pkg/lifecycle"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 const defaultILMDateFormat string = "2006-01-02"

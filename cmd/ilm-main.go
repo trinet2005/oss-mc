@@ -20,7 +20,7 @@ package cmd
 import (
 	"github.com/fatih/color"
 	"github.com/minio/cli"
-	"github.com/minio/pkg/v2/console"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 var ilmSubcommands = []cli.Command{

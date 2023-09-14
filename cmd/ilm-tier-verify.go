@@ -19,7 +19,7 @@ package cmd
 
 import (
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 var adminTierVerifyCmd = cli.Command{

@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"github.com/minio/cli"
-	"github.com/minio/pkg/v2/wildcard"
+	"github.com/trinet2005/oss-pkg/wildcard"
 )
 
 //

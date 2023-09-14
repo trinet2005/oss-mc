@@ -25,8 +25,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7"
+	minio "github.com/trinet2005/oss-go-sdk"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 func defaultPartSize() string {

@@ -25,8 +25,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/minio/minio-go/v7"
 	"github.com/shirou/gopsutil/v3/mem"
+	minio "github.com/trinet2005/oss-go-sdk"
 )
 
 const (

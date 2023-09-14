@@ -25,10 +25,10 @@ import (
 	"github.com/fatih/color"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
-	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/pkg/v2/console"
 	"github.com/rivo/tview"
+	"github.com/trinet2005/oss-admin-go"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 var adminTierInfoCmd = cli.Command{

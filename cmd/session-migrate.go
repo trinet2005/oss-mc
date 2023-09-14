@@ -21,9 +21,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/pkg/v2/console"
-	"github.com/minio/pkg/v2/quick"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
+	"github.com/trinet2005/oss-pkg/quick"
 )
 
 // Migrates session header version '7' to '8'. The only
@@ -35,14 +35,14 @@ func migrateSessionV7ToV8() {
 			if os.IsNotExist(err.ToGoError()) {
 				continue
 			}
-			fatalIf(err.Trace(sid), "Unable to load version `7`. Migration failed please report this issue at https://github.com/minio/mc/issues.")
+			fatalIf(err.Trace(sid), "Unable to load version `7`. Migration failed please report this issue at https://github.com/trinet2005/oss-mc/issues.")
 		}
 
 		// Close underlying session data file.
 		sV7.DataFP.Close()
 
 		sessionVersion, e := strconv.Atoi(sV7.Header.Version)
-		fatalIf(probe.NewError(e), "Unable to load version `7`. Migration failed please report this issue at https://github.com/minio/mc/issues.")
+		fatalIf(probe.NewError(e), "Unable to load version `7`. Migration failed please report this issue at https://github.com/trinet2005/oss-mc/issues.")
 		if sessionVersion > 7 { // It is new format.
 			continue
 		}
@@ -90,11 +90,11 @@ func migrateSessionV6ToV7() {
 			if os.IsNotExist(err.ToGoError()) {
 				continue
 			}
-			fatalIf(err.Trace(sid), "Unable to load version `6`. Migration failed please report this issue at https://github.com/minio/mc/issues.")
+			fatalIf(err.Trace(sid), "Unable to load version `6`. Migration failed please report this issue at https://github.com/trinet2005/oss-mc/issues.")
 		}
 
 		sessionVersion, e := strconv.Atoi(sV6Header.Version)
-		fatalIf(probe.NewError(e), "Unable to load version `6`. Migration failed please report this issue at https://github.com/minio/mc/issues.")
+		fatalIf(probe.NewError(e), "Unable to load version `6`. Migration failed please report this issue at https://github.com/trinet2005/oss-mc/issues.")
 		if sessionVersion > 6 { // It is new format.
 			continue
 		}
@@ -140,11 +140,11 @@ func migrateSessionV5ToV6() {
 			if os.IsNotExist(err.ToGoError()) {
 				continue
 			}
-			fatalIf(err.Trace(sid), "Unable to load version `6`. Migration failed please report this issue at https://github.com/minio/mc/issues.")
+			fatalIf(err.Trace(sid), "Unable to load version `6`. Migration failed please report this issue at https://github.com/trinet2005/oss-mc/issues.")
 		}
 
 		sessionVersion, e := strconv.Atoi(sV6Header.Version)
-		fatalIf(probe.NewError(e), "Unable to load version `6`. Migration failed please report this issue at https://github.com/minio/mc/issues.")
+		fatalIf(probe.NewError(e), "Unable to load version `6`. Migration failed please report this issue at https://github.com/trinet2005/oss-mc/issues.")
 		if sessionVersion > 5 { // It is new format.
 			continue
 		}

@@ -22,7 +22,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/minio/pkg/v2/console"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 // message interface for all structured messages implementing JSON(), String() methods.

@@ -1,4 +1,4 @@
-module github.com/minio/mc
+module github.com/trinet2005/oss-mc
 
 go 1.19
 
@@ -20,7 +20,6 @@ require (
 	github.com/minio/colorjson v1.0.6
 	github.com/minio/filepath v1.0.0
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.63
 	github.com/minio/selfupdate v0.6.0
 	github.com/minio/sha256-simd v1.0.1
 	github.com/mitchellh/go-homedir v1.1.0
@@ -46,13 +45,14 @@ require (
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/juju/ratelimit v1.0.2
-	github.com/minio/madmin-go/v3 v3.0.18
-	github.com/minio/pkg/v2 v2.0.1
 	github.com/muesli/reflow v0.3.0
 	github.com/navidys/tvxwidgets v0.3.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/prometheus/client_model v0.4.0
 	github.com/rivo/tview v0.0.0-20230909130259-ba6a2a345459
+	github.com/trinet2005/oss-admin-go v1.6.0
+	github.com/trinet2005/oss-go-sdk v1.14.0
+	github.com/trinet2005/oss-pkg v1.0.3
 	golang.org/x/term v0.12.0
 )
 
@@ -60,7 +60,8 @@ require (
 	aead.dev/minisign v0.2.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
-	github.com/minio/mux v1.9.0 // indirect
+	github.com/minio/minio-go/v7 v7.0.63 // indirect
+	github.com/minio/pkg/v2 v2.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230913181813-007df8e322eb // indirect

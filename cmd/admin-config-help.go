@@ -24,8 +24,8 @@ import (
 
 	"github.com/fatih/color"
 	json "github.com/minio/colorjson"
-	"github.com/minio/madmin-go/v3"
-	"github.com/minio/mc/pkg/probe"
+	"github.com/trinet2005/oss-admin-go"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 // HelpTmpl template used by all sub-systems

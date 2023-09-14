@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package main // import "github.com/minio/mc"
+package main // import "github.com/trinet2005/oss-mc"
 
 import (
 	"os"
 
-	mc "github.com/minio/mc/cmd"
-	"github.com/minio/pkg/v2/console"
+	mc "github.com/trinet2005/oss-mc/cmd"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 func main() {

@@ -32,9 +32,9 @@ import (
 	"time"
 
 	"github.com/minio/cli"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/pkg/v2/mimedb"
+	minio "github.com/trinet2005/oss-go-sdk"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/mimedb"
 )
 
 var sqlFlags = []cli.Flag{

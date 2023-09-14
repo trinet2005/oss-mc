@@ -35,13 +35,13 @@ import (
 	"time"
 
 	"github.com/mattn/go-ieproxy"
-	"github.com/minio/madmin-go/v3"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/encrypt"
+	"github.com/trinet2005/oss-admin-go"
+	minio "github.com/trinet2005/oss-go-sdk"
+	"github.com/trinet2005/oss-go-sdk/pkg/encrypt"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/minio/mc/pkg/probe"
-	"github.com/minio/pkg/v2/console"
+	"github.com/trinet2005/oss-mc/pkg/probe"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 func isErrIgnored(err *probe.Error) (ignored bool) {

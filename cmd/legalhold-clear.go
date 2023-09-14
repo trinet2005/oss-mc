@@ -23,8 +23,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/minio/cli"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/pkg/v2/console"
+	minio "github.com/trinet2005/oss-go-sdk"
+	"github.com/trinet2005/oss-pkg/console"
 )
 
 var lhClearFlags = []cli.Flag{
