@@ -24,9 +24,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/dustin/go-humanize"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/minio/cli"
-	"github.com/trinet2005/oss-admin-go"
+	"github.com/muesli/termenv"
 	"github.com/trinet2005/oss-pkg/console"
 )
 
@@ -80,8 +80,8 @@ var (
 )
 
 var (
-	// Terminal width
-	globalTermWidth int
+	// Terminal height/width, zero if not found
+	globalTermWidth, globalTermHeight int
 
 	globalHelpPager *termPager
 
@@ -111,6 +111,7 @@ func setGlobalsFromContext(ctx *cli.Context) error {
 	// Disable colorified messages if requested.
 	if globalNoColor || globalQuiet {
 		console.SetColorOff()
+		lipgloss.SetColorProfile(termenv.Ascii)
 	}
 
 	globalConnReadDeadline = ctx.Duration("conn-read-deadline")

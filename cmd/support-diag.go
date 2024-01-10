@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2022 MinIO, Inc.
+// Copyright (c) 2015-2023 MinIO, Inc.
 //
 // This file is part of MinIO Object Storage stack
 //
@@ -41,6 +41,12 @@ import (
 	"github.com/trinet2005/oss-pkg/console"
 )
 
+const (
+	anonymizeFlag     = "anonymize"
+	anonymizeStandard = "standard"
+	anonymizeStrict   = "strict"
+)
+
 var supportDiagFlags = append([]cli.Flag{
 	HealthDataTypeFlag{
 		Name:   "test",
@@ -53,6 +59,11 @@ var supportDiagFlags = append([]cli.Flag{
 		Usage:  "maximum duration diagnostics should be allowed to run",
 		Value:  1 * time.Hour,
 		Hidden: true,
+	},
+	cli.StringFlag{
+		Name:  anonymizeFlag,
+		Usage: "Data anonymization mode (standard|strict)",
+		Value: anonymizeStandard,
 	},
 }, subnetCommonFlags...)
 
@@ -79,6 +90,9 @@ EXAMPLES:
 
   2. Generate MinIO diagnostics report for cluster with alias 'myminio', save and upload to SUBNET manually
      {{.Prompt}} {{.HelpName}} myminio --airgap
+
+  3. Upload MinIO diagnostics report for cluster with alias 'myminio' to SUBNET, with strict anonymization
+     {{.Prompt}} {{.HelpName}} myminio --anonymize=strict
 `,
 }
 
@@ -86,6 +100,11 @@ EXAMPLES:
 func checkSupportDiagSyntax(ctx *cli.Context) {
 	if len(ctx.Args()) == 0 || len(ctx.Args()) > 1 {
 		showCommandHelpAndExit(ctx, 1) // last argument is exit code
+	}
+
+	anon := ctx.String(anonymizeFlag)
+	if anon != anonymizeStandard && anon != anonymizeStrict {
+		fatal(errDummy().Trace(), "Invalid anonymization mode. Valid options are 'standard' or 'strict'.")
 	}
 }
 
@@ -123,7 +142,7 @@ func tarGZ(healthInfo interface{}, version, filename string) error {
 		warningMsgHeader := infoText(warningMsgBoundary)
 		warningMsgTrailer := infoText(warningMsgBoundary)
 		console.Printf("%s\n%s\n%s\n%s\n", warningMsgHeader, warning, warningContents, warningMsgTrailer)
-		console.Infoln("MinIO diagnostics report saved at", filename)
+		console.Infoln("MinIO diagnostics report saved at ", filename)
 	}
 
 	return nil
@@ -149,7 +168,7 @@ func mainSupportDiag(ctx *cli.Context) error {
 
 	// Get the alias parameter from cli
 	aliasedURL := ctx.Args().Get(0)
-	alias, apiKey := initSubnetConnectivity(ctx, aliasedURL, true)
+	alias, apiKey := initSubnetConnectivity(ctx, aliasedURL, true, true)
 	if len(apiKey) == 0 {
 		// api key not passed as flag. Check that the cluster is registered.
 		apiKey = validateClusterRegistered(alias, true)
@@ -325,21 +344,8 @@ func fetchServerDiagInfo(ctx *cli.Context, client *madmin.AdminClient) (interfac
 			admin(len(info.Minio.Info.Servers) > 0)
 	}
 
-	progress := func(info madmin.HealthInfo) {
-		_ = cpu(len(info.Sys.CPUInfo) > 0) &&
-			diskHw(len(info.Sys.Partitions) > 0) &&
-			osInfo(len(info.Sys.OSInfo) > 0) &&
-			mem(len(info.Sys.MemInfo) > 0) &&
-			process(len(info.Sys.ProcInfo) > 0) &&
-			config(info.Minio.Config.Config != nil) &&
-			syserr(len(info.Sys.SysErrs) > 0) &&
-			syssrv(len(info.Sys.SysServices) > 0) &&
-			sysconfig(len(info.Sys.SysConfig) > 0) &&
-			admin(len(info.Minio.Info.Servers) > 0)
-	}
-
 	// Fetch info of all servers (cluster or single server)
-	resp, version, e := client.ServerHealthInfo(cont, *opts, ctx.Duration("deadline"))
+	resp, version, e := client.ServerHealthInfo(cont, *opts, ctx.Duration("deadline"), ctx.String(anonymizeFlag))
 	if e != nil {
 		cancel()
 		return nil, "", e
@@ -389,19 +395,7 @@ func fetchServerDiagInfo(ctx *cli.Context, client *madmin.AdminClient) (interfac
 		}
 		healthInfo = info
 	case madmin.HealthInfoVersion:
-		info := madmin.HealthInfo{}
-		for {
-			if e = decoder.Decode(&info); e != nil {
-				if errors.Is(e, io.EOF) {
-					e = nil
-				}
-
-				break
-			}
-
-			progress(info)
-		}
-		healthInfo = info
+		healthInfo, e = receiveHealthInfo(decoder)
 	}
 
 	// cancel the context if supportDiagChan has returned.

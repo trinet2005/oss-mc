@@ -27,7 +27,7 @@ import (
 	"strconv"
 
 	minio "github.com/trinet2005/oss-go-sdk"
-	. "gopkg.in/check.v1"
+	checkv1 "gopkg.in/check.v1"
 )
 
 type bucketHandler struct {
@@ -80,8 +80,13 @@ type objectHandler struct {
 }
 
 func (h objectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if ak := r.Header.Get("Authorization"); len(ak) == 0 {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	switch {
-	case r.Method == "PUT":
+	case r.Method == http.MethodPut:
 		// Handler for PUT object request.
 		length, e := strconv.Atoi(r.Header.Get("Content-Length"))
 		if e != nil {
@@ -95,7 +100,7 @@ func (h objectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("ETag", "9af2f8218b150c351ad802c6f3d66abe")
 		w.WriteHeader(http.StatusOK)
-	case r.Method == "HEAD":
+	case r.Method == http.MethodHead:
 		// Handler for Stat object request.
 		if r.URL.Path != h.resource {
 			w.WriteHeader(http.StatusNotFound)
@@ -105,7 +110,7 @@ func (h objectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Last-Modified", UTCNow().Format(http.TimeFormat))
 		w.Header().Set("ETag", "9af2f8218b150c351ad802c6f3d66abe")
 		w.WriteHeader(http.StatusOK)
-	case r.Method == "POST":
+	case r.Method == http.MethodPost:
 		// Handler for multipart upload request.
 		if _, ok := r.URL.Query()["uploads"]; ok {
 			if r.URL.Path == h.resource {
@@ -127,7 +132,7 @@ func (h objectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-	case r.Method == "GET":
+	case r.Method == http.MethodGet:
 		// Handler for get bucket location request.
 		if _, ok := r.URL.Query()["location"]; ok {
 			response := []byte("<LocationConstraint xmlns=\"http://doc.s3.amazonaws.com/2006-03-01\"></LocationConstraint>")
@@ -156,8 +161,38 @@ func (h objectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type stsHandler struct {
+	endpoint string
+	jwt      []byte
+}
+
+func (h stsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if err := ParseForm(r); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	switch {
+	case r.Method == http.MethodPost:
+		token := r.Form.Get("WebIdentityToken")
+		if token == string(h.jwt) {
+			response := []byte("<AssumeRoleWithWebIdentityResponse xmlns=\"https://sts.amazonaws.com/doc/2011-06-15/\"><AssumeRoleWithWebIdentityResult><AssumedRoleUser><Arn></Arn><AssumeRoleId></AssumeRoleId></AssumedRoleUser><Credentials><AccessKeyId>7NL5BR739GUQ0ZOD4JNB</AccessKeyId><SecretAccessKey>A2mxZSxPnHNhSduedUHczsXZpVSSssOLpDruUmTV</SecretAccessKey><Expiration>0001-01-01T00:00:00Z</Expiration><SessionToken>eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiI3Tkw1QlI3MzlHVVEwWk9ENEpOQiIsImV4cCI6MTY5OTYwMzMwNiwicGFyZW50IjoibWluaW8iLCJzZXNzaW9uUG9saWN5IjoiZXlKV1pYSnphVzl1SWpvaU1qQXhNaTB4TUMweE55SXNJbE4wWVhSbGJXVnVkQ0k2VzNzaVJXWm1aV04wSWpvaVFXeHNiM2NpTENKQlkzUnBiMjRpT2xzaVlXUnRhVzQ2S2lKZGZTeDdJa1ZtWm1WamRDSTZJa0ZzYkc5M0lpd2lRV04wYVc5dUlqcGJJbXR0Y3pvcUlsMTlMSHNpUldabVpXTjBJam9pUVd4c2IzY2lMQ0pCWTNScGIyNGlPbHNpY3pNNktpSmRMQ0pTWlhOdmRYSmpaU0k2V3lKaGNtNDZZWGR6T25Nek9qbzZLaUpkZlYxOSJ9.uuE_x7PO8QoPfUk9KzUELoAqxihIknZAvJLl5aYJjwpSjJYFTPLp6EvuyJX2hc18s9HzeiJ-vU0dPzsy50dXmg</SessionToken></Credentials></AssumeRoleWithWebIdentityResult><ResponseMetadata></ResponseMetadata></AssumeRoleWithWebIdentityResponse>")
+			w.Header().Set("Content-Length", strconv.Itoa(len(response)))
+			w.Header().Set("Content-Type", "application/xml")
+			w.Header().Set("Server", "MinIO")
+			w.Write(response)
+			return
+		} else {
+			response := []byte("<ErrorResponse xmlns=\"https://sts.amazonaws.com/doc/2011-06-15/\"><Error><Type></Type><Code>AccessDenied</Code><Message>Access denied: Invalid Token</Message></Error><RequestId></RequestId></ErrorResponse>")
+			w.Header().Set("Content-Length", strconv.Itoa(len(response)))
+			w.Header().Set("Content-Type", "application/xml")
+			w.Write(response)
+			return
+		}
+	}
+}
+
 // Test bucket operations.
-func (s *TestSuite) TestBucketOperations(c *C) {
+func (s *TestSuite) TestBucketOperations(c *checkv1.C) {
 	bucket := bucketHandler{
 		resource: "/bucket/",
 	}
@@ -170,41 +205,41 @@ func (s *TestSuite) TestBucketOperations(c *C) {
 	conf.SecretKey = "BYvgJM101sHngl2uzjXS/OBF/aMxAN06JrJ3qJlF"
 	conf.Signature = "S3v4"
 	s3c, err := S3New(conf)
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 
 	err = s3c.MakeBucket(context.Background(), "us-east-1", true, false)
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 
 	conf.HostURL = server.URL + string(s3c.GetURL().Separator)
 	s3c, err = S3New(conf)
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 
 	for content := range s3c.List(globalContext, ListOptions{ShowDir: DirNone}) {
-		c.Assert(content.Err, IsNil)
-		c.Assert(content.Type.IsDir(), Equals, true)
+		c.Assert(content.Err, checkv1.IsNil)
+		c.Assert(content.Type.IsDir(), checkv1.Equals, true)
 	}
 
 	conf.HostURL = server.URL + "/bucket"
 	s3c, err = S3New(conf)
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 
 	for content := range s3c.List(globalContext, ListOptions{ShowDir: DirNone}) {
-		c.Assert(content.Err, IsNil)
-		c.Assert(content.Type.IsDir(), Equals, true)
+		c.Assert(content.Err, checkv1.IsNil)
+		c.Assert(content.Type.IsDir(), checkv1.Equals, true)
 	}
 
 	conf.HostURL = server.URL + "/bucket/"
 	s3c, err = S3New(conf)
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 
 	for content := range s3c.List(globalContext, ListOptions{ShowDir: DirNone}) {
-		c.Assert(content.Err, IsNil)
-		c.Assert(content.Type.IsRegular(), Equals, true)
+		c.Assert(content.Err, checkv1.IsNil)
+		c.Assert(content.Type.IsRegular(), checkv1.Equals, true)
 	}
 }
 
 // Test all object operations.
-func (s *TestSuite) TestObjectOperations(c *C) {
+func (s *TestSuite) TestObjectOperations(c *checkv1.C) {
 	object := objectHandler{
 		resource: "/bucket/object",
 		data:     []byte("Hello, World"),
@@ -218,7 +253,7 @@ func (s *TestSuite) TestObjectOperations(c *C) {
 	conf.SecretKey = "BYvgJM101sHngl2uzjXS/OBF/aMxAN06JrJ3qJlF"
 	conf.Signature = "S3v4"
 	s3c, err := S3New(conf)
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 
 	var reader io.Reader
 	reader = bytes.NewReader(object.data)
@@ -227,16 +262,16 @@ func (s *TestSuite) TestObjectOperations(c *C) {
 			"Content-Type": "application/octet-stream",
 		},
 	})
-	c.Assert(err, IsNil)
-	c.Assert(n, Equals, int64(len(object.data)))
+	c.Assert(err, checkv1.IsNil)
+	c.Assert(n, checkv1.Equals, int64(len(object.data)))
 
 	reader, err = s3c.Get(context.Background(), GetOptions{})
-	c.Assert(err, IsNil)
+	c.Assert(err, checkv1.IsNil)
 	var buffer bytes.Buffer
 	{
 		_, err := io.Copy(&buffer, reader)
-		c.Assert(err, IsNil)
-		c.Assert(buffer.Bytes(), DeepEquals, object.data)
+		c.Assert(err, checkv1.IsNil)
+		c.Assert(buffer.Bytes(), checkv1.DeepEquals, object.data)
 	}
 }
 
@@ -258,9 +293,9 @@ var testSelectCompressionTypeCases = []struct {
 
 // TestSelectCompressionType - tests compression type returned
 // by method
-func (s *TestSuite) TestSelectCompressionType(c *C) {
+func (s *TestSuite) TestSelectCompressionType(c *checkv1.C) {
 	for _, test := range testSelectCompressionTypeCases {
 		cType := selectCompressionType(test.opts, test.object)
-		c.Assert(cType, DeepEquals, test.compressionType)
+		c.Assert(cType, checkv1.DeepEquals, test.compressionType)
 	}
 }

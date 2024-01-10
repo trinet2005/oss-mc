@@ -18,8 +18,11 @@
 package cmd
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/minio/cli"
 	json "github.com/minio/colorjson"
@@ -72,19 +75,39 @@ func (i srInfo) String() string {
 			Field{"Name", 15},
 			Field{"Endpoint", 46},
 			Field{"Sync", 4},
-		).buildRow("Deployment ID", "Site Name", "Endpoint", "Sync"))
+			Field{"Bandwidth", 10},
+			Field{"ILM Expiry Replication", 25},
+		).buildRow("Deployment ID", "Site Name", "Endpoint", "Sync", "Bandwidth", "ILM Expiry Replication"))
+		messages = append(messages, r)
+
+		r = console.Colorize("THeaders", newPrettyTable(" | ",
+			Field{"Deployment ID", 36},
+
+			Field{"Name", 15},
+			Field{"Endpoint", 46},
+			Field{"Sync", 4},
+			Field{"Bandwidth", 10},
+			Field{"ILM Expiry Replication", 25},
+		).buildRow("", "", "", "", "Per Bucket", ""))
 		messages = append(messages, r)
 		for _, peer := range info.Sites {
 			var chk string
 			if peer.SyncState == madmin.SyncEnabled {
 				chk = check
 			}
+			limit := "N/A" // N/A means cluster bandwidth is not configured
+			if peer.DefaultBandwidth.Limit > 0 {
+				limit = humanize.Bytes(uint64(peer.DefaultBandwidth.Limit * 8))
+				limit = fmt.Sprintf("%sb/s", limit[:len(limit)-1])
+			}
 			r := console.Colorize("TDetail", newPrettyTable(" | ",
 				Field{"Deployment ID", 36},
 				Field{"Name", 15},
 				Field{"Endpoint", 46},
 				Field{"Sync", 4},
-			).buildRow(peer.DeploymentID, peer.Name, peer.Endpoint, chk))
+				Field{"Bandwidth", 10},
+				Field{"ILM Expiry Replication", 25},
+			).buildRow(peer.DeploymentID, peer.Name, peer.Endpoint, chk, limit, strconv.FormatBool(peer.ReplicateILMExpiry)))
 			messages = append(messages, r)
 		}
 	} else {

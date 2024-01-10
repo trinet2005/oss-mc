@@ -20,14 +20,12 @@ package cmd
 import (
 	"crypto/tls"
 	"fmt"
-	"hash/fnv"
 	"net"
 	"net/http"
 	"net/url"
 	"sync"
 	"time"
 
-	"github.com/klauspost/compress/gzhttp"
 	"github.com/mattn/go-ieproxy"
 	"github.com/trinet2005/oss-admin-go"
 	"github.com/trinet2005/oss-go-sdk/pkg/credentials"
@@ -47,19 +45,11 @@ func NewAdminFactory() func(config *Config) (*madmin.AdminClient, *probe.Error) 
 		if e != nil {
 			return nil, probe.NewError(e)
 		}
-		// By default enable HTTPs.
-		useTLS := true
-		if targetURL.Scheme == "http" {
-			useTLS = false
-		}
-
-		// Save if target supports virtual host style.
 		hostName := targetURL.Host
 
-		// Generate a hash out of s3Conf.
-		confHash := fnv.New32a()
-		confHash.Write([]byte(hostName + config.AccessKey + config.SecretKey))
-		confSum := confHash.Sum32()
+		confSum := getConfigHash(config)
+
+		useTLS := isHostTLS(config)
 
 		// Lookup previous cache by hash.
 		mutex.Lock()
@@ -67,8 +57,15 @@ func NewAdminFactory() func(config *Config) (*madmin.AdminClient, *probe.Error) 
 		var api *madmin.AdminClient
 		var found bool
 		if api, found = clientCache[confSum]; !found {
-			// Admin API only supports signature v4.
-			creds := credentials.NewStaticV4(config.AccessKey, config.SecretKey, config.SessionToken)
+
+			transport := getTransportForConfig(config, true)
+
+			credsChain, err := getCredentialsChainForConfig(config, transport)
+			if err != nil {
+				return nil, err
+			}
+
+			creds := credentials.NewChainCredentials(credsChain)
 
 			// Not found. Instantiate a new MinIO
 			var e error
@@ -78,34 +75,6 @@ func NewAdminFactory() func(config *Config) (*madmin.AdminClient, *probe.Error) 
 			})
 			if e != nil {
 				return nil, probe.NewError(e)
-			}
-
-			// Keep TLS config.
-			tlsConfig := &tls.Config{
-				RootCAs: globalRootCAs,
-				// Can't use SSLv3 because of POODLE and BEAST
-				// Can't use TLSv1.0 because of POODLE and BEAST using CBC cipher
-				// Can't use TLSv1.1 because of RC4 cipher usage
-				MinVersion: tls.VersionTLS12,
-			}
-			if config.Insecure {
-				tlsConfig.InsecureSkipVerify = true
-			}
-
-			var transport http.RoundTripper = &http.Transport{
-				Proxy:                 ieproxy.GetProxyFunc(),
-				DialContext:           newCustomDialContext(config),
-				MaxIdleConnsPerHost:   256,
-				IdleConnTimeout:       90 * time.Second,
-				TLSHandshakeTimeout:   10 * time.Second,
-				ExpectContinueTimeout: 10 * time.Second,
-				TLSClientConfig:       tlsConfig,
-				DisableCompression:    true,
-			}
-			transport = gzhttp.Transport(transport)
-
-			if config.Debug {
-				transport = httptracer.GetNewTraceTransport(newTraceV4(), transport)
 			}
 
 			// Set custom transport.
@@ -139,7 +108,7 @@ func newAdminClient(aliasedURL string) (*madmin.AdminClient, *probe.Error) {
 		return nil, probe.NewError(fmt.Errorf("No valid configuration found for '%s' host alias", urlStrFull))
 	}
 
-	s3Config := NewS3Config(urlStrFull, aliasCfg)
+	s3Config := NewS3Config(alias, urlStrFull, aliasCfg)
 
 	s3Client, err := s3AdminNew(s3Config)
 	if err != nil {

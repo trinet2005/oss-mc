@@ -22,9 +22,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/trinet2005/oss-mc/pkg/probe"
-
 	"github.com/minio/cli"
+	"github.com/trinet2005/oss-mc/pkg/probe"
 )
 
 var aliasImportCmd = cli.Command{

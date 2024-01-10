@@ -23,7 +23,6 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"crypto/ed25519"
-	"crypto/elliptic"
 	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -60,7 +59,11 @@ func marshalPublicKey(pub interface{}) (publicKeyBytes []byte, e error) {
 			return nil, e
 		}
 	case *ecdsa.PublicKey:
-		publicKeyBytes = elliptic.Marshal(pub.Curve, pub.X, pub.Y)
+		pubKey, e := pub.ECDH()
+		if e != nil {
+			return nil, e
+		}
+		publicKeyBytes = pubKey.Bytes()
 	case ed25519.PublicKey:
 		publicKeyBytes = pub
 	default:
@@ -102,7 +105,7 @@ func promptTrustSelfSignedCert(ctx context.Context, endpoint, alias string) (*x5
 		return nil, nil
 	}
 
-	if te != nil && !strings.Contains(te.Error(), "certificate signed by unknown authority") &&
+	if !strings.Contains(te.Error(), "certificate signed by unknown authority") &&
 		!strings.Contains(te.Error(), "certificate is not trusted") /* darwin specific error message */ {
 		return nil, probe.NewError(te)
 	}
